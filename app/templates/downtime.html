@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Equipment Downtime Tracker</title>
+</head>
+<body>
+    <h1>Log Equipment Downtime</h1>
+
+    {% if error %}
+        <p role="alert">{{ error }}</p>
+    {% endif %}
+
+    {% if entry %}
+        <h2>Downtime entry received</h2>
+        <p>Equipment: {{ entry.equipment_name }}</p>
+        <p>Downtime: {{ entry.downtime_minutes }} minutes</p>
+        <p>Reason: {{ entry.reason }}</p>
+    {% endif %}
+
+    <form method="post">
+        <p>
+            <label for="equipment_name">Equipment name</label>
+            <input type="text" id="equipment_name" name="equipment_name"
+                   value="{{ request.form.get('equipment_name', '') if error else '' }}"
+                   required>
+        </p>
+
+        <p>
+            <label for="downtime_minutes">Downtime in minutes</label>
+            <input type="number" id="downtime_minutes" name="downtime_minutes"
+                   value="{{ request.form.get('downtime_minutes', '') if error else '' }}"
+                   min="1" step="1" required>
+        </p>
+
+        <p>
+            <label for="reason">Reason for downtime</label>
+            <textarea id="reason" name="reason" rows="4" required>{{ request.form.get('reason', '') if error else '' }}</textarea>
+        </p>
+
+        <button type="submit">Log downtime</button>
+    </form>
+</body>
+</html>

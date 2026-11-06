@@ -1,5 +1,5 @@
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
@@ -8,9 +8,36 @@ reports = []
 
 
 # Home page
-@app.route("/")
+
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return "Equipment Downtime Tracker is running!"
+    if request.method == "GET":
+        return render_template("downtime.html")
+
+    equipment_name = request.form.get("equipment_name", "").strip()
+    reason = request.form.get("reason", "").strip()
+
+    try:
+        downtime_minutes = int(request.form.get("downtime_minutes", ""))
+    except ValueError:
+        return render_template(
+            "downtime.html",
+            error="Enter downtime as a whole number of minutes.",
+        ), 400
+
+    if not equipment_name or not reason or downtime_minutes < 1:
+        return render_template(
+            "downtime.html",
+            error="Enter an equipment name, at least 1 minute, and a reason.",
+        ), 400
+
+    entry = {
+        "equipment_name": equipment_name,
+        "downtime_minutes": downtime_minutes,
+        "reason": reason,
+    }
+    return render_template("downtime.html", entry=entry)
+
 
 
 # Submit an equipment failure report
